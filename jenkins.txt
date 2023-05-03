@@ -19,3 +19,7 @@ node {
         }
     }
 }
+
+
+#####
+Thinking that jenkins server is running in the same network as this working EC2 instance. Just using ssh and spining docker compose
