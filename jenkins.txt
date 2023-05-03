@@ -1,0 +1,21 @@
+node {
+    stage('Checking out repo') {
+        git 'https://github.com/jay7383/test-repo.git'
+    }
+    stage('Building docekr image') {
+        sh 'docker build -t jaythackur/test-repo .'
+    }
+    stage('Pushing image to docker hub') {
+        withCredentials([usernamePassword(credentialsId: 'test-cred', passwordVariable: 'test-passwd', usernameVariable: 'test-dockerhub-uname')]) {
+            sh "docker login -u test-dockerhub-uname -p test-passwd"
+        }
+        sh 'docker push jaythackur/test-repo'
+    }
+    stage('Deploy to AWS') {
+        withCredentials([sshUserPrivateKey(credentialsId: 'ssh-key', keyFileVariable: 'SSH_KEY_FILE', passphraseVariable: '', usernameVariable: 'ec2-user')]) {
+            sshagent(['ssh-key']) {
+                sh "ssh -o StrictHostKeyChecking=no ec2-user@$SERVER_IP 'cd /home && git clone https://github.com/jay7383/test-repo.git && docker-compose up -d'"
+            }
+        }
+    }
+}

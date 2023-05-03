@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  test-app:
+    image: jaythackur/test-repo
+    ports:
+      - "80:80"
+    restart: always
